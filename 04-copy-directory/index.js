@@ -1,29 +1,41 @@
-const fs = require('fs')
-const path = require('path')
+const fsp = require('fs/promises');
+const path = require('path');
 
-function copyDir (dirSrc) {
-    const __root = path.resolve(path.dirname(require.main.filename))
-    const __dirSrc = path.join(__root, dirSrc);
-    const __dirDist = path.join(__root, dirSrc.concat('-copy'));
-
-    fs.mkdir(__dirDist, {recursive: true}, err => {
-        if (err) throw err
-    })
-
-    fs.readdir(__dirSrc, {withFileTypes: true}, (err, files) => {
-        if (err) throw err
-        for (const file of files) {
-            if (file.isFile()) {
-                fs.stat(path.resolve(__dirSrc, file.name), (err, fileStat) => {
-                    fs.copyFile(path.resolve(__dirSrc, file.name), path.resolve(__dirDist, file.name), err => {
-                        if (err) throw err
-                    })
-                })
-            }
-        }
-    })
-    // console.log(dirSrc)
-    // console.log(dirSrc.concat("-copy"))
+async function createFolder(dir) {
+  await fsp.mkdir(dir, { recursive: true });
 }
 
-copyDir("files")
+
+async function copyDir(dirSrc) {
+  const rootPath = path.resolve(path.dirname(require.main.filename));
+  const srcPath = path.join(rootPath, dirSrc);
+  const distPath = path.join(rootPath, dirSrc.concat('-copy'));
+
+  await createFolder(distPath);
+  const files = await fsp.readdir(srcPath, { withFileTypes: true });
+  for (const file of files) {
+    if (file.isFile()) {
+      const srcFile = path.resolve(srcPath, file.name);
+      const distFile = path.resolve(distPath, file.name);
+      await fsp.copyFile(srcFile, distFile);
+    }
+  }
+  // fs.readdir(srcPath, { withFileTypes: true }, (err, files) => {
+  //   if (err) throw err;
+  //   for (const file of files) {
+  //     if (file.isFile()) {
+  //       fs.stat(path.resolve(srcPath, file.name), (err) => {
+  //         fs.copyFile(
+  //           path.resolve(srcPath, file.name),
+  //           path.resolve(distPath, file.name),
+  //           (err) => {
+  //             if (err) throw err;
+  //           }
+  //         );
+  //       });
+  //     }
+  //   }
+  // });
+}
+
+copyDir('files');
