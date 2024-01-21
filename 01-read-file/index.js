@@ -1,11 +1,15 @@
 const fs = require('fs');
 const path = require('path');
-let __dirpath = path.resolve(path.dirname(require.main.filename))
-let __file = path.join(__dirpath, 'text.txt');
-var stream = fs.ReadStream(__file, { encoding: 'utf-8' });
-stream.on('readable', function () {
-  var data = stream.read();
+
+const folderPath = path.resolve(path.dirname(require.main.filename));
+const filePath = path.join(folderPath, 'text.txt');
+const stream = fs.ReadStream(filePath, { encoding: 'utf-8' });
+
+function readContent() {
+  const data = stream.read();
   if (data !== null) {
-      console.log(data);
+    console.log(data);
   }
-});
+}
+
+stream.on('readable', readContent);
