@@ -28,8 +28,9 @@ async function createFolder(dir) {
 async function replaceSample(tempFile, files) {
     for (const file of files) {
         sampleFile = path.resolve(tempDir, file.name)
-        if (file.isFile() && file.name.split('.').at(-1) === 'html') {
-            nameSample = file.name.split('.').at(0)
+        if (file.isFile() && file.name.split('.').slice(-1)[0] === 'html') {
+            nameSample = file.name.split('.').slice(0, -1).join('.')
+            console.log(nameSample)
             contentSampleFile = await fsp.readFile(sampleFile, {encoding: 'utf-8'})
             tempFile = tempFile.replace(`{{${nameSample}}}`, contentSampleFile);
         }
@@ -50,7 +51,7 @@ async function mergeStyle() {
     const mergedCssFile = fs.createWriteStream(outputCssFile)
     for (const file of files) {
         cssFile = path.resolve(cssSourceDir, file.name)
-        if (file.isFile() && file.name.split('.').at(-1) === 'css') {
+        if (file.isFile() && file.name.split('.').slice(-1)[0] === 'css') {
             const tempFile = fs.createReadStream(cssFile, {encoding: 'utf-8'})
             tempFile.pipe(mergedCssFile)
         }
@@ -76,6 +77,7 @@ async function copyFiles (srcDir, distDir) {
 }
 
 async function mergeProject() {
+    await fsp.rm(projectDir, { recursive: true, force: true });
     await createFolder(projectDir)
     await mergeHtml()
     await mergeStyle()
