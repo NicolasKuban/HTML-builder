@@ -22,7 +22,7 @@ async function mergeFiles() {
     const files = await fsp.readdir(__sourceDir, {withFileTypes: true})
     for (const file of files) {
       if (file.isFile()) {
-        if (file.name.split('.').at(-1) === 'css') {
+        if (file.name.split('.').slice(-1)[0] === 'css') {
           namesFiles.push(file.name)
         }
       }
