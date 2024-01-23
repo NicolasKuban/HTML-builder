@@ -11,6 +11,7 @@ async function copyDir(dirSrc) {
   const srcPath = path.join(rootPath, dirSrc);
   const distPath = path.join(rootPath, dirSrc.concat('-copy'));
 
+  await fsp.rm(distPath, { recursive: true, force: true })
   await createFolder(distPath);
   const files = await fsp.readdir(srcPath, { withFileTypes: true });
   for (const file of files) {
