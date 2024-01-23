@@ -9,7 +9,7 @@ fs.readdir(folderPath, { withFileTypes: true }, (err, files) => {
   for (const file of files) {
     if (file.isFile()) {
       fs.stat(path.resolve(folderPath, file.name), (err, fileStat) => {
-        console.log(file.name.split('.').concat(fileStat.size).join(' - '));
+        console.log(file.name.split('.').concat(String(fileStat.size).concat(' bytes')).join(' - '));
       });
     }
   }
